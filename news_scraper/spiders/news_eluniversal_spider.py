@@ -6,27 +6,44 @@ TARGET_URL = 'https://activo.eluniversal.com.mx/historico/search/indexCesar.php?
 ARTICLE_LINK = '//div[@class="moduloNoticia"]//div[@class="FechaSeccion"]/span[@class="Seccion"]/text()[contains(.,"Estados") or contains(.,"Nación") or contains(.,"Metrópoli")]/ancestor::div[2]//a/@href'
 
 
+def generate_urls(n):
+    urls = []
+    for i in range(n):
+        url = f'https://activo.eluniversal.com.mx/historico/search/indexCesar.php?q=politica&anio=&seccion=&opinion=&tipo_contenido=&autor=&tipoedicion=&dia=&mes=&rango_Fechas=&k_rango_fechas=&fecha_ini=&fecha_fin=&editor=&start={i*20}&page={i+1}'
+        urls.append(url)
+    return urls
+
+
 class NewsSpider(scrapy.Spider):
     name = 'news_eluniversal'
-    start_urls = [TARGET_URL]
+    start_urls = generate_urls(1)
 
     custom_settings = {
-        'FEED_URI': 'eluniversal.csv',
-        'FEED_FORMAT': 'csv',
-        'FEED_EXPORT_ENCODING': 'utf-8'
+        'FEEDS': {
+            'eluniversal.csv': {
+                'format': 'csv',
+                'encoding': 'utf8',
+            }
+        },
+        'LOG_STDOUT': True,
+        'LOG_FILE': '/tmp/scrapy_eluniversal.txt',
+        'LOG_LEVEL': 'INFO'
     }
 
     def parse(self, response):
         articles_links = response.xpath(ARTICLE_LINK).getall()
-        for link in articles_links:
+        # articles that aren't from the opinion section
+        clean_links = [
+            link for link in articles_links if link.find('opinion') == -1]
+        for link in clean_links:
             yield response.follow(link, callback=self.parse_link, cb_kwargs={'url': link})
 
     def parse_link(self, response, **kwargs):
         link = kwargs['url']
         section = response.xpath(
             '//a[@class="ce12-DatosArticulo_TiempoRelojes"]/text()').get()
-        title = response.xpath('//h1/text()').get()
-        subtitle = response.xpath('//h2/text()').get()
+        title = response.xpath('//*[contains(@class,"h1")]/text()').get()
+        subtitle = response.xpath('//h2[@class="h2"]/text()').get()
         author = response.xpath(
             '//span[@class="ce12-DatosArticulo_autor"]/text()').get()
         location = response.xpath(
