@@ -20,7 +20,7 @@ def clean_opinion_links(links):
             clean_links.append(link)
     return clean_links
 
-class NewsSpider(scrapy.Spider):
+class ElUniversalSpider(scrapy.Spider):
     name = 'news_eluniversal'
     start_urls = generate_urls(1)
 

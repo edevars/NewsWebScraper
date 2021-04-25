@@ -6,7 +6,7 @@ TARGET_URL = 'https://www.milenio.com/politica'
 ARTICLE_LINK = '//div[@class="title"]/a/@href'
 
 
-class NewsSpider(scrapy.Spider):
+class MilenioSpider(scrapy.Spider):
     name = 'news_milenio'
     start_urls = [TARGET_URL]
 
