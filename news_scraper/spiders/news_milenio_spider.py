@@ -11,9 +11,12 @@ class NewsSpider(scrapy.Spider):
     start_urls = [TARGET_URL]
 
     custom_settings = {
-        'FEED_URI': 'milenio.csv',
-        'FEED_FORMAT': 'csv',
-        'FEED_EXPORT_ENCODING': 'utf-8'
+        'FEED_URI': './extracted_data/milenio.json',
+        'FEED_FORMAT': 'json',
+        'FEED_EXPORT_ENCODING': 'utf-8',
+        'LOG_STDOUT': True,
+        'LOG_FILE': '/tmp/scrapy_eluniversal.txt',
+        'LOG_LEVEL': 'INFO'
     }
 
     def parse(self, response):

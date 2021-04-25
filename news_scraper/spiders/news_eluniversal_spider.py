@@ -13,18 +13,21 @@ def generate_urls(n):
         urls.append(url)
     return urls
 
+def clean_opinion_links(links):
+    clean_links = []
+    for link in links:
+        if(link.find('opinion')==-1):
+            clean_links.append(link)
+    return clean_links
 
 class NewsSpider(scrapy.Spider):
     name = 'news_eluniversal'
     start_urls = generate_urls(1)
 
     custom_settings = {
-        'FEEDS': {
-            'eluniversal.csv': {
-                'format': 'csv',
-                'encoding': 'utf8',
-            }
-        },
+        'FEED_URI': './extracted_data/el_universal.json',
+        'FEED_FORMAT': 'json',
+        'FEED_EXPORT_ENCODING': 'utf-8',
         'LOG_STDOUT': True,
         'LOG_FILE': '/tmp/scrapy_eluniversal.txt',
         'LOG_LEVEL': 'INFO'
@@ -33,8 +36,8 @@ class NewsSpider(scrapy.Spider):
     def parse(self, response):
         articles_links = response.xpath(ARTICLE_LINK).getall()
         # articles that aren't from the opinion section
-        clean_links = [
-            link for link in articles_links if link.find('opinion') == -1]
+        clean_links = clean_opinion_links(articles_links)
+
         for link in clean_links:
             yield response.follow(link, callback=self.parse_link, cb_kwargs={'url': link})
 
@@ -46,8 +49,6 @@ class NewsSpider(scrapy.Spider):
         subtitle = response.xpath('//h2[@class="h2"]/text()').get()
         author = response.xpath(
             '//span[@class="ce12-DatosArticulo_autor"]/text()').get()
-        location = response.xpath(
-            '//div[@class="content-date"]/span[@class="location"]/text()').get()
         datetime = response.xpath(
             '//span[@class="ce12-DatosArticulo_ElementoFecha"]/text()').get()
         article_paragraphs = response.xpath(
@@ -60,7 +61,6 @@ class NewsSpider(scrapy.Spider):
             'subtitle': subtitle,
             'section': section,
             'author': author,
-            'location': location,
             'date_time': datetime,
             'article_text': article_text
         }
