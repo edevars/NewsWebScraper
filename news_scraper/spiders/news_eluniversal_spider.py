@@ -1,7 +1,6 @@
 import scrapy
 
 NAME = 'El Universal'
-BASE_URL = 'https://www.milenio.com'
 TARGET_URL = 'https://activo.eluniversal.com.mx/historico/search/indexCesar.php?q=politica&anio=&seccion=&opinion=&tipo_contenido=&autor=&tipoedicion=&dia=&mes=&rango_Fechas=&k_rango_fechas=&fecha_ini=&fecha_fin=&editor=&start=20&page=2'
 ARTICLE_LINK = '//div[@class="moduloNoticia"]//div[@class="FechaSeccion"]/span[@class="Seccion"]/text()[contains(.,"Estados") or contains(.,"Nación") or contains(.,"Metrópoli")]/ancestor::div[2]//a/@href'
 
