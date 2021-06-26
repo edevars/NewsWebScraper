@@ -15,7 +15,7 @@ class UnoTvSpider(scrapy.Spider):
         'FEED_FORMAT': 'json',
         'FEED_EXPORT_ENCODING': 'utf-8',
         'LOG_STDOUT': True,
-        'LOG_FILE': '/tmp/scrapy_unotv.txt',
+        'LOG_FILE': './logs/scrapy_unotv.txt',
         'LOG_LEVEL': 'INFO'
     }
 
