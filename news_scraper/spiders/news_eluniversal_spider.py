@@ -15,13 +15,13 @@ def generate_urls(n):
 def clean_opinion_links(links):
     clean_links = []
     for link in links:
-        if(link.find('opinion')==-1):
+        if(link.find('opinion') == -1):
             clean_links.append(link)
     return clean_links
 
 class ElUniversalSpider(scrapy.Spider):
     name = 'news_eluniversal'
-    start_urls = generate_urls(1)
+
 
     custom_settings = {
         'FEED_URI': './extracted_data/el_universal.json',
@@ -31,6 +31,12 @@ class ElUniversalSpider(scrapy.Spider):
         'LOG_FILE': './logs/scrapy_eluniversal.txt',
         'LOG_LEVEL': 'INFO'
     }
+
+    def __init__(self, pages=1, *args, **kwargs):
+        super(ElUniversalSpider, self).__init__(*args, **kwargs)
+        print('Pages: ', pages)
+        urls = generate_urls(int(pages))
+        self.start_urls = urls
 
     def parse(self, response):
         articles_links = response.xpath(ARTICLE_LINK).getall()
